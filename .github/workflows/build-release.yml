@@ -1,0 +1,205 @@
+name: smartdns-build-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        # date +"1.%Y.%m.%d-%H%M"
+        description: 'Release version (e.g. 1.2023.08.07-2121)'
+        required: true
+
+
+env:
+  OPENSSL_VER: '1.1.1v'
+  ARTIFACT_RETENTION_DAYS: '3'
+
+jobs:
+  build:
+    name: Build ipk(static compile) ${{ matrix.config.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config: 
+          - {
+              arch: x86,
+              musl_cross_target: i686-linux-musl
+            }
+          - {
+              arch: x86_64,
+              musl_cross_target: x86_64-linux-musl
+            }
+          - {
+              arch: arm,
+              musl_cross_target: armv6-linux-musleabihf
+            }
+          - {
+              arch: arm64,
+              musl_cross_target: aarch64-linux-musl
+            }
+          - {
+              arch: mips,
+              musl_cross_target: mips-linux-musl
+            }
+          - {
+              arch: mipsel,
+              musl_cross_target: mipsel-linux-musl
+            }
+          - {
+              arch: mips64,
+              musl_cross_target: mips64-linux-musl
+            }
+          - {
+              arch: mips64el,
+              musl_cross_target: mips64el-linux-musl
+            }
+          - {
+              arch: powerpc,
+              musl_cross_target: powerpc-linux-musl
+            }
+          - {
+              arch: powerpc64,
+              musl_cross_target: powerpc64-linux-musl
+            }
+          - {
+              arch: powerpc64le,
+              musl_cross_target: powerpc64le-linux-musl
+            }
+          - {
+              arch: riscv64,
+              musl_cross_target: riscv64-linux-musl
+            }
+    container:
+      image: quay.io/bitsaver/musl-cross:${{ matrix.config.musl_cross_target }}-latest
+      options: -v ${{ github.workspace }}:/worker --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
+    steps:
+      - name: Checkout SmartDNS Source Code
+        uses: actions/checkout@v3
+        with:
+          ref: master
+          fetch-depth: 1
+          path: ./
+
+      - name: Install Build Tools
+        run: |
+          apk add perl make coreutils tar pkgconfig dpkg binutils
+
+      - name: Prepare & Set Version
+        run: |
+          mkdir -p /worker/build
+          sed -i "s/VER=.*/VER=${{ github.event.inputs.version }}/" /worker/package/build-pkg.sh
+
+      - name: Prepare OpenSSL ${{ env.OPENSSL_VER }} Source Code
+        run: |
+          apk update && apk add curl
+          cd /worker
+          mkdir -p /worker/openssl
+          curl -LsS https://ftp.openssl.org/source/openssl-${{ env.OPENSSL_VER }}.tar.gz -o openssl.tar.gz
+          tar -zxvf openssl.tar.gz --strip-components 1 -C openssl
+
+      - name: Build OpenSSL ${{ env.OPENSSL_VER }}
+        env:
+          ARCH: ${{ matrix.config.arch }}
+        run: |
+          mkdir -p /worker/openssl/build
+          cd /worker/openssl
+          if [ "$ARCH" == "mipsel" ] || [ "$ARCH" == "mips" ] ; then
+            OPENSSL_ARCH="linux-mips32"
+          elif [ "$ARCH" == "mips64el" ] || [ "$ARCH" == "mips64" ] ; then
+            OPENSSL_ARCH="linux-generic64"
+          elif [ "$ARCH" == "powerpc" ] ; then
+            OPENSSL_ARCH="linux-ppc"
+          elif [ "$ARCH" == "powerpc64" ] ; then
+            OPENSSL_ARCH="linux-generic64"
+          elif [ "$ARCH" == "powerpc64le" ] ; then
+            OPENSSL_ARCH="linux-ppc64le"
+          elif [ "$ARCH" == "arm" ] ; then
+            OPENSSL_ARCH="linux-armv4"
+          elif [ "$ARCH" == "arm64" ] ; then
+            OPENSSL_ARCH="linux-aarch64"
+          elif [ "$ARCH" == "riscv64" ] ; then
+            OPENSSL_ARCH="linux64-riscv64"
+          elif [ "$ARCH" == "x86" ] ; then
+            OPENSSL_ARCH="linux-x86"
+          elif [ "$ARCH" == "x86_64" ] ; then
+            OPENSSL_ARCH="linux-x86_64"
+          else
+            OPENSSL_ARCH="linux-$ARCH"
+          fi
+          perl ./Configure ${OPENSSL_ARCH} no-tests
+          make all -j$(nproc)
+
+      - name: Build Smartdns
+        env:
+          ARCH: ${{ matrix.config.arch }}
+        run: |
+          cd /worker
+          export CFLAGS="-I /worker/openssl/include"
+          export LDFLAGS="-s -Wl,--build-id=sha1 -L /worker/openssl"
+          sh ./package/build-pkg.sh --platform debian --arch all --filearch $ARCH-debian --static --outputdir /worker/build
+          sh ./package/build-pkg.sh --platform linux --arch all --filearch $ARCH-linux --static --outputdir /worker/build
+          sh ./package/build-pkg.sh --platform openwrt --arch all --filearch $ARCH-openwrt --static --outputdir /worker/build
+          sh ./package/build-pkg.sh --platform optware --arch all --filearch $ARCH-optware --static --outputdir /worker/build
+          cp ./src/smartdns /worker/build/smartdns-$ARCH -a
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ github.workspace }}/build
+          name: ${{ matrix.config.musl_cross_target }}
+          if-no-files-found: error
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ github.token }}
+          file: ${{ github.workspace }}/build/*
+          tag: v${{ github.event.inputs.version }}
+          file_glob: true
+          release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
+          overwrite: true
+          prerelease: false
+          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`.'
+
+  build-luci:
+    name: Build luci-app-smartdns
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [luci, luci-compat]
+    steps:
+      - name: Checkout SmartDNS Source Code
+        uses: actions/checkout@v3
+        with:
+          ref: master
+          fetch-depth: 1
+          path: ./
+
+      - name: Build luci
+        continue-on-error: true
+        run: |
+          cd ${{ github.workspace }}
+          mkdir -p ${{ github.workspace }}/build
+          sed -i "s/VER=.*/VER=${{ github.event.inputs.version }}/" package/build-pkg.sh
+          sh ${{ github.workspace }}/package/build-pkg.sh --platform ${{ matrix.platform }} --arch all --filearch ${{ matrix.platform }}-all --outputdir ${{ github.workspace }}/build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ github.workspace }}/build
+          name: ${{ matrix.platform }}
+          if-no-files-found: error
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ github.token }}
+          file: ${{ github.workspace }}/build/*
+          tag: v${{ github.event.inputs.version }}
+          file_glob: true
+          release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
+          overwrite: true
+          prerelease: false
+          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`.'
