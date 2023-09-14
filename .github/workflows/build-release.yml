@@ -12,7 +12,7 @@ on:
 env:
   # LTS version, eg. 1.1.1v, 3.0.10
   # when openssl is 3.0.10/3.1.2, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
-  OPENSSL_VER: '1.1.1v'
+  OPENSSL_VER: '1.1.1w'
   ARTIFACT_RETENTION_DAYS: '3'
 
 jobs:
