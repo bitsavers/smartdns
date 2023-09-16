@@ -1,18 +1,22 @@
 name: smartdns-build-release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        # date +"1.%Y.%m.%d-%H%M"
-        description: 'Release version (e.g. 1.2023.08.07-2121)'
-        required: true
+  push:
+    branches: 
+      - pkg-build
+  repository_dispatch:
+    types: smartdns-build-release
 
 
 env:
+  # date +"3.%Y.%m.%d-%H%M"
+  SMARTDNS_VERSION: '3.2023.09.16-1024'
   # LTS version, eg. 1.1.1w, 3.0.10
   # when openssl is 3.0.10/3.1.2, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
-  OPENSSL_VER: '1.1.1w'
+  # temporary solution: If we define "-DBROKEN_CLANG_ATOMICS" , it works. 
+  # The impact of BROKEN_CLANG_ATOMICS is that fallback code using thread locking is used instead of the atomics calls.
+  # https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
+  OPENSSL_VER: '3.0.10'
   ARTIFACT_RETENTION_DAYS: '3'
 
 jobs:
@@ -89,7 +93,7 @@ jobs:
       - name: Prepare & Set Version
         run: |
           mkdir -p /worker/build
-          sed -i "s/VER=.*/VER=${{ github.event.inputs.version }}/" /worker/package/build-pkg.sh
+          sed -i "s/VER=.*/VER=${{ env.SMARTDNS_VERSION }}/" /worker/package/build-pkg.sh
 
       - name: Prepare OpenSSL ${{ env.OPENSSL_VER }} Source Code
         run: |
@@ -98,63 +102,6 @@ jobs:
           mkdir -p /worker/openssl
           curl -LsS https://ftp.openssl.org/source/openssl-${{ env.OPENSSL_VER }}.tar.gz -o openssl.tar.gz
           tar -zxvf openssl.tar.gz --strip-components 1 -C openssl
-
-      # openssl 1.1.1v directory '/worker/openssl':
-      # drwxr-xr-x 19 root root    4096 Aug 24 12:10 .
-      # drwxr-xr-x 11 1001 ping    4096 Aug 24 12:09 ..
-      # -rw-rw-r--  1 root root      87 Aug  1 13:51 ACKNOWLEDGEMENTS
-      # -rw-rw-r--  1 root root     854 Aug  1 13:51 AUTHORS
-      # -rw-rw-r--  1 root root  613733 Aug  1 13:51 CHANGES
-      # -rw-rw-r--  1 root root    3627 Aug  1 13:51 CONTRIBUTING
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:51 Configurations
-      # -rwxrwxr-x  1 root root  130510 Aug  1 13:51 Configure
-      # -rw-rw-r--  1 root root      84 Aug  1 13:51 FAQ
-      # -rw-rw-r--  1 root root   57824 Aug  1 13:51 INSTALL
-      # -rw-rw-r--  1 root root    6121 Aug  1 13:51 LICENSE
-      # -rw-r--r--  1 root root  404943 Aug 24 12:09 Makefile
-      # -rw-rw-r--  1 root root   46758 Aug  1 13:51 NEWS
-      # -rw-rw-r--  1 root root    4492 Aug  1 13:51 NOTES.ANDROID
-      # -rw-rw-r--  1 root root    2093 Aug  1 13:51 NOTES.DJGPP
-      # -rw-rw-r--  1 root root    4578 Aug  1 13:51 NOTES.PERL
-      # -rw-rw-r--  1 root root    5532 Aug  1 13:51 NOTES.UNIX
-      # -rw-rw-r--  1 root root    3861 Aug  1 13:51 NOTES.VMS
-      # -rw-rw-r--  1 root root    7488 Aug  1 13:51 NOTES.WIN
-      # -rw-rw-r--  1 root root    3157 Aug  1 13:51 README
-      # -rw-rw-r--  1 root root   16069 Aug  1 13:51 README.ENGINE
-      # -rw-rw-r--  1 root root      61 Aug  1 13:51 README.FIPS
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:51 VMS
-      # drwxrwxr-x  3 root root    4096 Aug 24 12:10 apps
-      # -rw-rw-r--  1 root root    2549 Aug  1 13:51 appveyor.yml
-      # -rw-rw-r--  1 root root    4099 Aug  1 13:51 build.info
-      # -rwxrwxr-x  1 root root   28664 Aug  1 13:51 config
-      # -rw-rw-r--  1 root root    2510 Aug  1 13:51 config.com
-      # -rwxr-xr-x  1 root root  362323 Aug 24 12:09 configdata.pm
-      # drwxrwxr-x 64 root root    4096 Aug 24 12:10 crypto
-      # drwxrwxr-x  9 root root    4096 Aug  1 13:51 demos
-      # drwxrwxr-x  7 root root    4096 Aug  1 13:51 doc
-      # -rw-rw-r--  1 root root   11055 Aug  1 13:51 e_os.h
-      # drwxrwxr-x  3 root root    4096 Aug 24 12:10 engines
-      # drwxrwxr-x  3 root root    4096 Aug  1 13:51 external
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:51 fuzz
-      # drwxrwxr-x  5 root root    4096 Aug  1 13:51 include
-      # -rw-r--r--  1 root root 3698888 Aug 24 12:10 libcrypto.a
-      # -rw-r--r--  1 root root  127526 Aug 24 12:10 libcrypto.map
-      # -rw-r--r--  1 root root     291 Aug 24 12:10 libcrypto.pc
-      # lrwxrwxrwx  1 root root      16 Aug 24 12:10 libcrypto.so -> libcrypto.so.1.1
-      # -rwxr-xr-x  1 root root 2581816 Aug 24 12:10 libcrypto.so.1.1
-      # -rw-r--r--  1 root root  686678 Aug 24 12:10 libssl.a
-      # -rw-r--r--  1 root root   16073 Aug 24 12:10 libssl.map
-      # -rw-r--r--  1 root root     270 Aug 24 12:10 libssl.pc
-      # lrwxrwxrwx  1 root root      13 Aug 24 12:10 libssl.so -> libssl.so.1.1
-      # -rwxr-xr-x  1 root root  560940 Aug 24 12:10 libssl.so.1.1
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:51 ms
-      # -rw-r--r--  1 root root     224 Aug 24 12:10 openssl.pc
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:51 os-dep
-      # drwxrwxr-x  4 root root    4096 Aug 24 12:10 ssl
-      # drwxrwxr-x 11 root root   12288 Aug  1 13:51 test
-      # drwxrwxr-x  2 root root    4096 Aug 24 12:10 tools
-      # drwxrwxr-x  3 root root    4096 Aug 24 12:10 util
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:51 wycheproof
 
       # openssl 3.0.10 directory '/worker/openssl':
       # drwxr-xr-x 20 root root    4096 Aug 24 12:23 .
@@ -230,28 +177,39 @@ jobs:
           cd /worker/openssl
           if [ "$ARCH" == "mipsel" ] || [ "$ARCH" == "mips" ] ; then
             OPENSSL_ARCH="linux-mips32"
+            OPENSSL_ARGS="-DBROKEN_CLANG_ATOMICS"
           elif [ "$ARCH" == "mips64el" ] || [ "$ARCH" == "mips64" ] ; then
             OPENSSL_ARCH="linux-generic64"
+            OPENSSL_ARGS=""
           elif [ "$ARCH" == "powerpc" ] ; then
             OPENSSL_ARCH="linux-ppc"
+            OPENSSL_ARGS="-DBROKEN_CLANG_ATOMICS"
           elif [ "$ARCH" == "powerpc64" ] ; then
             OPENSSL_ARCH="linux-generic64"
+            OPENSSL_ARGS=""
           elif [ "$ARCH" == "powerpc64le" ] ; then
             OPENSSL_ARCH="linux-ppc64le"
+            OPENSSL_ARGS=""
           elif [ "$ARCH" == "arm" ] ; then
             OPENSSL_ARCH="linux-armv4"
+            OPENSSL_ARGS="-DBROKEN_CLANG_ATOMICS"
           elif [ "$ARCH" == "arm64" ] ; then
             OPENSSL_ARCH="linux-aarch64"
+            OPENSSL_ARGS=""
           elif [ "$ARCH" == "riscv64" ] ; then
             OPENSSL_ARCH="linux64-riscv64"
+            OPENSSL_ARGS=""
           elif [ "$ARCH" == "x86" ] ; then
             OPENSSL_ARCH="linux-x86"
+            OPENSSL_ARGS=""
           elif [ "$ARCH" == "x86_64" ] ; then
             OPENSSL_ARCH="linux-x86_64"
+            OPENSSL_ARGS=""
           else
             OPENSSL_ARCH="linux-$ARCH"
+            OPENSSL_ARGS=""
           fi
-          perl ./Configure ${OPENSSL_ARCH} no-tests
+          perl ./Configure ${OPENSSL_ARCH} no-tests ${OPENSSL_ARGS}
           make all -j$(nproc)
 
       - name: Build Smartdns
@@ -280,12 +238,12 @@ jobs:
         with:
           repo_token: ${{ github.token }}
           file: ${{ github.workspace }}/build/*
-          tag: v${{ github.event.inputs.version }}
+          tag: v${{ env.SMARTDNS_VERSION }}
           file_glob: true
-          release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
+          release_name: 'Release SmartDNS ${{ env.SMARTDNS_VERSION }}'
           overwrite: true
           prerelease: false
-          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`.'
+          body: 'SmartDNS static version, built `${{ env.SMARTDNS_VERSION }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
 
   build-luci:
     name: Build luci-app-smartdns
@@ -306,7 +264,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           mkdir -p ${{ github.workspace }}/build
-          sed -i "s/VER=.*/VER=${{ github.event.inputs.version }}/" package/build-pkg.sh
+          sed -i "s/VER=.*/VER=${{ env.SMARTDNS_VERSION }}/" package/build-pkg.sh
           sh ${{ github.workspace }}/package/build-pkg.sh --platform ${{ matrix.platform }} --arch all --filearch ${{ matrix.platform }}-all --outputdir ${{ github.workspace }}/build
 
       - name: Upload artifact
@@ -322,9 +280,9 @@ jobs:
         with:
           repo_token: ${{ github.token }}
           file: ${{ github.workspace }}/build/*
-          tag: v${{ github.event.inputs.version }}
+          tag: v${{ env.SMARTDNS_VERSION }}
           file_glob: true
-          release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
+          release_name: 'Release SmartDNS ${{ env.SMARTDNS_VERSION }}'
           overwrite: true
           prerelease: false
-          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`.'
+          body: 'SmartDNS static version, built `${{ env.SMARTDNS_VERSION }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
