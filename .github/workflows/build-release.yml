@@ -99,7 +99,7 @@ jobs:
           curl -LsS https://ftp.openssl.org/source/openssl-${{ env.OPENSSL_VER }}.tar.gz -o openssl.tar.gz
           tar -zxvf openssl.tar.gz --strip-components 1 -C openssl
 
-      # openssl 1.1.1v directory '/worker/openssl':
+      # openssl 1.1.1w directory '/worker/openssl':
       # drwxr-xr-x 19 root root    4096 Aug 24 12:10 .
       # drwxr-xr-x 11 1001 ping    4096 Aug 24 12:09 ..
       # -rw-rw-r--  1 root root      87 Aug  1 13:51 ACKNOWLEDGEMENTS
@@ -155,73 +155,6 @@ jobs:
       # drwxrwxr-x  2 root root    4096 Aug 24 12:10 tools
       # drwxrwxr-x  3 root root    4096 Aug 24 12:10 util
       # drwxrwxr-x  2 root root    4096 Aug  1 13:51 wycheproof
-
-      # openssl 3.0.10 directory '/worker/openssl':
-      # drwxr-xr-x 20 root root    4096 Aug 24 12:23 .
-      # drwxr-xr-x 11 1001 ping    4096 Aug 24 12:19 ..
-      # -rw-rw-r--  1 root root     157 Aug  1 13:47 ACKNOWLEDGEMENTS.md
-      # -rw-rw-r--  1 root root     990 Aug  1 13:47 AUTHORS.md
-      # -rw-rw-r--  1 root root  749090 Aug  1 13:47 CHANGES.md
-      # -rw-rw-r--  1 root root    4360 Aug  1 13:47 CONTRIBUTING.md
-      # drwxrwxr-x  3 root root    4096 Aug  1 13:47 Configurations
-      # -rwxrwxr-x  1 root root  135498 Aug  1 13:47 Configure
-      # -rw-rw-r--  1 root root     197 Aug  1 13:47 FAQ.md
-      # -rw-rw-r--  1 root root    1228 Aug  1 13:47 HACKING.md
-      # -rw-rw-r--  1 root root   63406 Aug  1 13:47 INSTALL.md
-      # -rw-rw-r--  1 root root   10175 Aug  1 13:47 LICENSE.txt
-      # -rw-r--r--  1 root root 1918891 Aug 24 12:19 Makefile
-      # -rw-r--r--  1 root root 1056409 Aug 24 12:19 Makefile.in
-      # -rw-rw-r--  1 root root   74075 Aug  1 13:47 NEWS.md
-      # -rw-rw-r--  1 root root    4592 Aug  1 13:47 NOTES-ANDROID.md
-      # -rw-rw-r--  1 root root    2112 Aug  1 13:47 NOTES-DJGPP.md
-      # -rw-rw-r--  1 root root   10822 Aug  1 13:47 NOTES-NONSTOP.md
-      # -rw-rw-r--  1 root root    4994 Aug  1 13:47 NOTES-PERL.md
-      # -rw-rw-r--  1 root root    5685 Aug  1 13:47 NOTES-UNIX.md
-      # -rw-rw-r--  1 root root    2740 Aug  1 13:47 NOTES-VALGRIND.md
-      # -rw-rw-r--  1 root root    4832 Aug  1 13:47 NOTES-VMS.md
-      # -rw-rw-r--  1 root root    9227 Aug  1 13:47 NOTES-WINDOWS.md
-      # -rw-rw-r--  1 root root   15669 Aug  1 13:47 README-ENGINES.md
-      # -rw-rw-r--  1 root root    6856 Aug  1 13:47 README-FIPS.md
-      # -rw-rw-r--  1 root root    5472 Aug  1 13:47 README-PROVIDERS.md
-      # -rw-rw-r--  1 root root    6633 Aug  1 13:47 README.md
-      # -rw-rw-r--  1 root root    3897 Aug  1 13:47 SUPPORT.md
-      # -rw-rw-r--  1 root root     100 Aug  1 13:47 VERSION.dat
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:47 VMS
-      # drwxrwxr-x  5 root root   12288 Aug 24 12:23 apps
-      # -rw-rw-r--  1 root root    2042 Aug  1 13:47 appveyor.yml
-      # -rw-rw-r--  1 root root    3825 Aug  1 13:47 build.info
-      # -rwxrwxr-x  1 root root     378 Aug  1 13:47 config
-      # -rw-rw-r--  1 root root    2516 Aug  1 13:47 config.com
-      # -rwxr-xr-x  1 root root  944319 Aug 24 12:19 configdata.pm
-      # -rw-rw-r--  1 root root   16738 Aug  1 13:47 configdata.pm.in
-      # drwxrwxr-x 70 root root   20480 Aug 24 12:23 crypto
-      # drwxrwxr-x 15 root root    4096 Aug  1 13:47 demos
-      # drwxrwxr-x 12 root root    4096 Aug 24 12:19 doc
-      # -rw-rw-r--  1 root root   13129 Aug  1 13:47 e_os.h
-      # drwxrwxr-x  3 root root    4096 Aug 24 12:23 engines
-      # drwxrwxr-x  3 root root    4096 Aug  1 13:47 external
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:47 fuzz
-      # drwxrwxr-x  5 root root    4096 Aug  1 13:47 include
-      # -rw-r--r--  1 root root 8058880 Aug 24 12:23 libcrypto.a
-      # -rw-r--r--  1 root root  160381 Aug 24 12:23 libcrypto.ld
-      # -rw-r--r--  1 root root     332 Aug 24 12:23 libcrypto.pc
-      # lrwxrwxrwx  1 root root      14 Aug 24 12:23 libcrypto.so -> libcrypto.so.3
-      # -rwxr-xr-x  1 root root 4858316 Aug 24 12:23 libcrypto.so.3
-      # -rw-r--r--  1 root root 1088488 Aug 24 12:23 libssl.a
-      # -rw-r--r--  1 root root   16669 Aug 24 12:23 libssl.ld
-      # -rw-r--r--  1 root root     270 Aug 24 12:23 libssl.pc
-      # lrwxrwxrwx  1 root root      11 Aug 24 12:23 libssl.so -> libssl.so.3
-      # -rwxr-xr-x  1 root root  753648 Aug 24 12:23 libssl.so.3
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:47 ms
-      # -rw-r--r--  1 root root     224 Aug 24 12:23 openssl.pc
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:47 os-dep
-      # -rw-r--r--  1 root root   31435 Aug 24 12:19 pod2htmd.tmp
-      # drwxrwxr-x  5 root root    4096 Aug 24 12:23 providers
-      # drwxrwxr-x  4 root root   12288 Aug 24 12:23 ssl
-      # drwxrwxr-x 12 root root   12288 Aug  1 13:47 test
-      # drwxrwxr-x  2 root root    4096 Aug 24 12:23 tools
-      # drwxrwxr-x  3 root root    4096 Aug 24 12:23 util
-      # drwxrwxr-x  2 root root    4096 Aug  1 13:47 wycheproof
       - name: Build OpenSSL ${{ env.OPENSSL_VER }}
         env:
           ARCH: ${{ matrix.config.arch }}
@@ -285,7 +218,7 @@ jobs:
           release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
           overwrite: true
           prerelease: false
-          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`.'
+          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
 
   build-luci:
     name: Build luci-app-smartdns
@@ -327,4 +260,4 @@ jobs:
           release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
           overwrite: true
           prerelease: false
-          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`.'
+          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
