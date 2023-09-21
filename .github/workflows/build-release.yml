@@ -7,16 +7,15 @@ on:
   repository_dispatch:
     types: smartdns-build-release
 
-
 env:
   # date +"3.%Y.%m.%d-%H%M"
-  SMARTDNS_VERSION: '3.2023.09.16-1024'
-  # LTS version, eg. 1.1.1w, 3.0.10
+  SMARTDNS_VERSION: '3.2023.09.21-1942'
+  # LTS version, eg. 1.1.1w, 3.0.11
   # when openssl is 3.0.10/3.1.2, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
   # temporary solution: If we define "-DBROKEN_CLANG_ATOMICS" , it works. 
   # The impact of BROKEN_CLANG_ATOMICS is that fallback code using thread locking is used instead of the atomics calls.
   # https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
-  OPENSSL_VER: '3.0.10'
+  OPENSSL_VER: '3.0.11'
   ARTIFACT_RETENTION_DAYS: '3'
 
 jobs:
