@@ -9,7 +9,7 @@ on:
 
 env:
   # date +"3.%Y.%m.%d-%H%M"
-  SMARTDNS_VERSION: '3.2023.09.28-1901'
+  SMARTDNS_VERSION: '3.2023.10.07-1010'
   # LTS version, eg. 1.1.1w, 3.0.11
   # when openssl is 3.0.10/3.1.2, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
   # temporary solution: If we define "-DBROKEN_CLANG_ATOMICS" , it works. 
