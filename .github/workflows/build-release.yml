@@ -1,17 +1,16 @@
 name: smartdns-build-release
 
 on:
-  push:
-    branches: 
-      - pkg-build
-  repository_dispatch:
-    types: smartdns-build-release
+  workflow_dispatch:
+    inputs:
+      version:
+        # date +"`3.%Y.%m.%d-%H%M"
+        description: 'Release version (e.g. 3.2023.10.07-1010)'
+        required: true
 
 env:
-  # date +"3.%Y.%m.%d-%H%M"
-  SMARTDNS_VERSION: '3.2023.10.07-1010'
   # LTS version, eg. 1.1.1w, 3.0.11
-  # when openssl is 3.0.10/3.1.2, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
+  # when openssl is 3.0.x/3.1.x, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
   # temporary solution: If we define "-DBROKEN_CLANG_ATOMICS" , it works. 
   # The impact of BROKEN_CLANG_ATOMICS is that fallback code using thread locking is used instead of the atomics calls.
   # https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
@@ -92,7 +91,7 @@ jobs:
       - name: Prepare & Set Version
         run: |
           mkdir -p /worker/build
-          sed -i "s/VER=.*/VER=${{ env.SMARTDNS_VERSION }}/" /worker/package/build-pkg.sh
+          sed -i "s/VER=.*/VER=${{ github.event.inputs.version }}/" /worker/package/build-pkg.sh
 
       - name: Prepare OpenSSL ${{ env.OPENSSL_VER }} Source Code
         run: |
@@ -102,7 +101,7 @@ jobs:
           curl -LsS https://ftp.openssl.org/source/openssl-${{ env.OPENSSL_VER }}.tar.gz -o openssl.tar.gz
           tar -zxvf openssl.tar.gz --strip-components 1 -C openssl
 
-      # openssl 3.0.10 directory '/worker/openssl':
+      # openssl 3.0.11 directory '/worker/openssl':
       # drwxr-xr-x 20 root root    4096 Aug 24 12:23 .
       # drwxr-xr-x 11 1001 ping    4096 Aug 24 12:19 ..
       # -rw-rw-r--  1 root root     157 Aug  1 13:47 ACKNOWLEDGEMENTS.md
@@ -237,12 +236,12 @@ jobs:
         with:
           repo_token: ${{ github.token }}
           file: ${{ github.workspace }}/build/*
-          tag: v${{ env.SMARTDNS_VERSION }}
+          tag: v${{ github.event.inputs.version }}
           file_glob: true
-          release_name: 'Release SmartDNS ${{ env.SMARTDNS_VERSION }}'
+          release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
           overwrite: true
           prerelease: false
-          body: 'SmartDNS static version, built `${{ env.SMARTDNS_VERSION }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
+          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
 
   build-luci:
     name: Build luci-app-smartdns
@@ -263,7 +262,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           mkdir -p ${{ github.workspace }}/build
-          sed -i "s/VER=.*/VER=${{ env.SMARTDNS_VERSION }}/" package/build-pkg.sh
+          sed -i "s/VER=.*/VER=${{ github.event.inputs.version }}/" package/build-pkg.sh
           sh ${{ github.workspace }}/package/build-pkg.sh --platform ${{ matrix.platform }} --arch all --filearch ${{ matrix.platform }}-all --outputdir ${{ github.workspace }}/build
 
       - name: Upload artifact
@@ -279,9 +278,9 @@ jobs:
         with:
           repo_token: ${{ github.token }}
           file: ${{ github.workspace }}/build/*
-          tag: v${{ env.SMARTDNS_VERSION }}
+          tag: v${{ github.event.inputs.version }}
           file_glob: true
-          release_name: 'Release SmartDNS ${{ env.SMARTDNS_VERSION }}'
+          release_name: 'Release SmartDNS ${{ github.event.inputs.version }}'
           overwrite: true
           prerelease: false
-          body: 'SmartDNS static version, built `${{ env.SMARTDNS_VERSION }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
+          body: 'SmartDNS static version, built `${{ github.event.inputs.version }}`. OpenSSL `${{ env.OPENSSL_VER }}`.'
