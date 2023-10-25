@@ -9,12 +9,12 @@ on:
         required: true
 
 env:
-  # LTS version, eg. 1.1.1w, 3.0.11
+  # LTS version, eg. 1.1.1w, 3.0.12
   # when openssl is 3.0.x/3.1.x, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
   # temporary solution: If we define "-DBROKEN_CLANG_ATOMICS" , it works. 
   # The impact of BROKEN_CLANG_ATOMICS is that fallback code using thread locking is used instead of the atomics calls.
   # https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
-  OPENSSL_VER: '3.0.11'
+  OPENSSL_VER: '3.0.12'
   ARTIFACT_RETENTION_DAYS: '3'
 
 jobs:
@@ -101,7 +101,7 @@ jobs:
           curl -LsS https://ftp.openssl.org/source/openssl-${{ env.OPENSSL_VER }}.tar.gz -o openssl.tar.gz
           tar -zxvf openssl.tar.gz --strip-components 1 -C openssl
 
-      # openssl 3.0.11 directory '/worker/openssl':
+      # openssl 3.0.12 directory '/worker/openssl':
       # drwxr-xr-x 20 root root    4096 Aug 24 12:23 .
       # drwxr-xr-x 11 1001 ping    4096 Aug 24 12:19 ..
       # -rw-rw-r--  1 root root     157 Aug  1 13:47 ACKNOWLEDGEMENTS.md
