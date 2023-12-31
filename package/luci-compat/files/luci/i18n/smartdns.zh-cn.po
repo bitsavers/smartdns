@@ -239,7 +239,7 @@ msgstr "启用IPV6服务器。"
 msgid "Enable TCP DNS Server"
 msgstr "启用TCP服务器。"
 
-msgid "Enable daily(week) auto update."
+msgid "Enable daily (weekly) auto update."
 msgstr "启用每天（每周）自动更新。"
 
 msgid "Enable DOH DNS Server"
@@ -249,7 +249,7 @@ msgid "Enable DOT DNS Server"
 msgstr "启用DOT服务器。"
 
 msgid "Update Time (Every Week)"
-msgstr "更新时间(每周)"
+msgstr "更新时间 (每周)"
 
 msgid "Every Day"
 msgstr "每天"
@@ -276,7 +276,7 @@ msgid "Every Sunday"
 msgstr "每周日"
 
 msgid "Update Time (Every Day)"
-msgstr "更新时间(每天)"
+msgstr "更新时间 (每天)"
 
 msgid "Enable Audit Log"
 msgstr "启用审计日志"
