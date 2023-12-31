@@ -110,6 +110,9 @@ msgstr "配置IP规则列表"
 msgid "Custom Settings"
 msgstr "自定义设置"
 
+msgid "Log Settings"
+msgstr "日志设置"
+
 msgid "Do not use these IP addresses."
 msgstr "忽略这些IP地址"
 
@@ -243,7 +246,7 @@ msgid "Enable TCP DNS Server"
 msgstr "启用TCP服务器。"
 
 msgid "Enable daily (weekly) auto update."
-msgstr "启用每日（每周）自动更新"
+msgstr "启用每天（每周）自动更新"
 
 msgid "Enable DOH DNS Server"
 msgstr "启用DOH服务器"
@@ -251,7 +254,7 @@ msgstr "启用DOH服务器"
 msgid "Enable DOT DNS Server"
 msgstr "启用DOT服务器"
 
-msgid "Update time (every day)"
+msgid "Update Time (Every Day)"
 msgstr "更新时间（每天）"
 
 msgid "Update Time (Every Week)"
@@ -447,6 +450,9 @@ msgstr "日志数量"
 
 msgid "Log File"
 msgstr "日志文件路径"
+
+msgid "View Log"
+msgstr "查看日志"
 
 msgid "mDNS Lookup"
 msgstr "mDNS查询"
@@ -858,3 +864,27 @@ msgstr "类型"
 
 msgid "udp"
 msgstr "udp"
+
+msgid "Clear Logs..."
+msgstr "清除日志..."
+
+msgid "Logs cleared successfully!"
+msgstr "日志清除成功！"
+
+msgid "Log is clean."
+msgstr "日志已清除。"
+
+msgid "Clear Logs"
+msgstr "清除日志"
+
+msgid "Failed to clear log."
+msgstr "清除日志失败。"
+
+msgid "Log file does not exist."
+msgstr "日志文件不存在。"
+
+msgid "Back SmartDNS"
+msgstr "返回 SmartDNS"
+
+msgid "Refresh every %s seconds."
+msgstr "每 %s 秒刷新。"
