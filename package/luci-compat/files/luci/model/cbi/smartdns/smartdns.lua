@@ -1086,7 +1086,7 @@ s = m:section(TypedSection, "smartdns", translate("Download Files Setting"), tra
 s.anonymous = true
 
 ---- download Files Settings
-o = s:option(Flag, "enable_auto_update", translate("Enable Auto Update"), translate("Enable daily(week) auto update."))
+o = s:option(Flag, "enable_auto_update", translate("Enable Auto Update"), translate("Enable daily (weekly) auto update."))
 o.rmempty = true
 o.default = o.disabled
 o.rempty = true
