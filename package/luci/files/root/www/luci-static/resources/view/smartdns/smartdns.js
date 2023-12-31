@@ -139,6 +139,7 @@ return view.extend({
 		s.tab("files", _("Download Files Setting"), _("Download domain list files for domain-rule and include config files, please refresh the page after download to take effect."));
 		s.tab("proxy", _("Proxy Server Settings"));
 		s.tab("custom", _("Custom Settings"));
+		s.tab("log", _("Log Settings"));
 
 		///////////////////////////////////////
 		// Basic Settings
@@ -625,7 +626,7 @@ return view.extend({
 		o.default = "*";
 		o.depends('enable_auto_update', '1');
 
-		o = s.taboption('files', form.ListValue, 'auto_update_day_time', _("Update time (every day)"));
+		o = s.taboption('files', form.ListValue, 'auto_update_day_time', _("Update Time (Every Day)"));
 		for (var i = 0; i < 24; i++)
 			o.value(i, i + ':00');
 		o.default = '5';
@@ -802,6 +803,20 @@ return view.extend({
 		o.rmempty = true
 		o.placeholder = "/var/log/smartdns/smartdns-audit.log"
 		o.depends({"enable_audit_log":"1", "audit_log_output_mode":"file"});
+
+		///////////////////////////////////////
+		// log settings;
+		///////////////////////////////////////
+		o = s.taboption("log", form.DummyValue, "_view_log", _("View Log"));
+		o.renderWidget = function () {
+			return E('button', {
+				'class': 'btn cbi-button',
+				'id': 'btn_view_log',
+				'click': ui.createHandlerFn(this, function () {
+					window.location.href = "smartdns/log";
+				})
+			}, [_("View Log")]);
+		}
 
 		////////////////
 		// Upstream servers;
