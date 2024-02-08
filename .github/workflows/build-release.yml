@@ -248,7 +248,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [luci, luci-compat]
+        platform: [luci, luci-compat, luci-lite]
     steps:
       - name: Checkout SmartDNS Source Code
         uses: actions/checkout@v4
