@@ -80,8 +80,21 @@ build()
 	tar zcf $ROOT/data.tar.gz -C root .
 	tar zcf $OUTPUTDIR/luci-app-smartdns.$VER.$FILEARCH.ipk ./control.tar.gz ./data.tar.gz ./debian-binary
 
-	which apk >/dev/null 2>&1
-	if [ $? -eq 0 ]; then
+	APK_BIN=$(which apk 2>/dev/null)
+	if [ -z "$APK_BIN" ]; then
+	    echo "== warning: apk tool not found, skip build apk package. =="
+	    skip_apk_build=1
+	fi
+	if [ -z "$skip_apk_build" ]; then
+	    APK_VER_STR=$("$APK_BIN" --version 2>/dev/null | awk '{print $2}')
+	    APK_MAJOR=${APK_VER_STR%%.*}
+	    if [ "$APK_MAJOR" -lt 3 ]; then
+	        echo "== warning: apk version $APK_VER_STR (< 3) detected, skip build apk package. =="
+	        skip_apk_build=1
+	    fi
+	fi
+
+	if [ -z "$skip_apk_build" ]; then
 		APK_VER="`echo $VER | sed 's/[-]/-r/'`"
 		ARCH="`echo $ARCH | sed 's/all/noarch/g'`"
 		apk mkpkg \
@@ -101,8 +114,6 @@ build()
 			rm -fr $ROOT/
 			return 1
 		fi
-	else
-		echo "== warning: apk tool not found, skip build apk package. =="
 	fi
 
 	rm -fr $ROOT/
