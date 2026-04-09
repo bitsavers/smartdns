@@ -11,12 +11,12 @@ on:
 env:
   # https://openssl-library.org/roadmap/index.html
   # https://openssl-library.org/post/2025-02-20-openssl-3.5-lts/
-  # LTS version, eg. 1.1.1w, 3.0.19, 3.5.5
+  # LTS version, eg. 1.1.1w, 3.0.19, 3.5.6
   # when openssl is 3.0.x/3.1.x, smartdns build will fail on mips/mipsel/powerpc, https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
   # temporary solution: If we define "-DBROKEN_CLANG_ATOMICS", it works.
   # The impact of BROKEN_CLANG_ATOMICS is that fallback code using thread locking is used instead of the atomics calls.
   # https://mta.openssl.org/pipermail/openssl-users/2023-January/015763.html
-  OPENSSL_VER: '3.5.5'
+  OPENSSL_VER: '3.5.6'
   ARTIFACT_RETENTION_DAYS: '3'
 
 jobs:
@@ -80,7 +80,7 @@ jobs:
       options: -v ${{ github.workspace }}:/worker --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
     steps:
       - name: Checkout SmartDNS Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: master
           fetch-depth: 1
@@ -229,7 +229,7 @@ jobs:
           cp ./src/smartdns /worker/build/smartdns-$ARCH -a
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           path: ${{ github.workspace }}/build
           name: ${{ matrix.config.musl_cross_target }}
@@ -256,7 +256,7 @@ jobs:
         platform: [luci, luci-compat, luci-lite]
     steps:
       - name: Checkout SmartDNS Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: master
           fetch-depth: 1
@@ -271,7 +271,7 @@ jobs:
           sh ${{ github.workspace }}/package/build-pkg.sh --platform ${{ matrix.platform }} --arch all --filearch ${{ matrix.platform }}-all --outputdir ${{ github.workspace }}/build
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           path: ${{ github.workspace }}/build
           name: ${{ matrix.platform }}
