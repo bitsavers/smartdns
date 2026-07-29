@@ -80,7 +80,7 @@ jobs:
       options: -v ${{ github.workspace }}:/worker --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
     steps:
       - name: Checkout SmartDNS Source Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: master
           fetch-depth: 1
@@ -256,7 +256,7 @@ jobs:
         platform: [luci, luci-compat, luci-lite]
     steps:
       - name: Checkout SmartDNS Source Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: master
           fetch-depth: 1
